@@ -25,7 +25,7 @@ class StoreSerializer < ActiveModel::Serializer
 
   def pictures
     object.pictures.map do |picture|
-      hash = { id: picture.id, url: picture.picture}
+      { id: picture.id, url: picture.picture }
     end
   end
 

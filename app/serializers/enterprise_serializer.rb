@@ -1,6 +1,7 @@
 class EnterpriseSerializer < ActiveModel::Serializer
-  attributes :name, :developer, :operator, :district, :address, :contact, :contact_position, :contact_telephone,
-             :contact_otherinfo, :remarks, :pictures, :store_count, :code
+  attributes :name, :developer, :operator, :district, :address, :contact,
+    :contact_position, :contact_telephone,  :contact_otherinfo, :remarks,
+    :pictures, :store_count, :code
 
   def operator
     user = User.find_by(id: object.operator_id)

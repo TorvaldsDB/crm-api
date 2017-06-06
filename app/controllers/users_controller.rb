@@ -7,8 +7,11 @@ class UsersController < ApplicationController
   # GET /users
   def index
     # authorize User
-    users = User.all.order(created_at: :desc).page(params[:page][:number]).per(params[:page][:size])
-    render status: :ok, json: users, EachSerializer: UserSerializer, meta: pagination_dict(users)
+    users = User.all.order(created_at: :desc)
+                .page(params[:page][:number])
+                .per(params[:page][:size])
+    render status: :ok, json: users, EachSerializer: UserSerializer,
+           meta: pagination_dict(users)
   end
 
   # 返回所有BD专员 / 返回所有运营专员
@@ -23,16 +26,14 @@ class UsersController < ApplicationController
   def create
     authorize User
     # binding.pry
-    parameters = {}
-    parameters[:name] = user_params[:name]
-    parameters[:password] = user_params[:password]
-    parameters[:password_confirmation] = user_params[:password_confirmation]
+    parameters = user_params.slice(:name, :password, :password_confirmation)
 
     user = User.new(parameters)
     if user.save && user.add_role(user_params[:role].to_sym)
       render status: :created, json: user, Serializer: UserSerializer
     else
-      render status: :unprocessable_entity, json: user, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: user,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -58,7 +59,8 @@ class UsersController < ApplicationController
     if @user.update(parameters) && @user.add_role(user_params[:role].to_sym)
       render status: :ok, json: @user, Serializer: UserSerializer
     else
-      render status: :unprocessable_entity, json: @user, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @user,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -68,13 +70,15 @@ class UsersController < ApplicationController
     authorize @user
     if current_user.id == @user.id
       @user.errors.add(:name, "管理员不能删除自己的账号")
-      return render status: :unauthorized, json: @user, serializer: ActiveModel::Serializer::ErrorSerializer
+      return render status: :unauthorized, json: @user,
+                    serializer: ActiveModel::Serializer::ErrorSerializer
     end
 
     if @user.destroy
       render status: :no_content
     else
-      render status: :unprocessable_entity, json: @user, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @user,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -92,8 +96,8 @@ class UsersController < ApplicationController
     password = params[:data][:attributes][:password]
     user = User.find_by(name: name)
     if user && user.authenticate(password)
-      exp = Time.now.to_i + 10*24*3600  # 10天过期
-      payload = {:user_id => user.id, :exp => exp }
+      exp = Time.now + 10.days  # 10天过期
+      payload = { user_id: user.id, exp: exp }
       jwt = JsonWebToken.encode(payload)
       response.headers['Authorization'] = "Bearer #{jwt}"
       render status: :created
@@ -112,13 +116,12 @@ class UsersController < ApplicationController
   # PUT /users/:id/reset_password
   def reset_password
     authorize @user
-    parameters = {}
-    parameters[:password] = reset_password_params[:password]
-    parameters[:password_confirmation] = reset_password_params[:password_confirmation]
+    parameters = reset_password_params.slice(:password, :password_confirmation)
     if @user.authenticate(reset_password_params[:old_password]) && @user.update(parameters)
       render status: :ok, json: @user, Serializer: UserSerializer
     else
-      render status: :unprocessable_entity, json: @user, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @user,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -134,7 +137,8 @@ class UsersController < ApplicationController
       render status: :ok, json: @user, Serializer: UserSerializer
     elsif @current_user.id == @user.id
       @user.errors.add(:name, "管理员不能重置自己的密码")
-      render status: :unprocessable_entity, json: @user, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @user,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -145,10 +149,20 @@ class UsersController < ApplicationController
     end
 
     def user_params
-      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:name, :password, :password_confirmation, :role])
+      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(
+        params,
+        only: [
+          :name, :password, :password_confirmation, :role
+        ]
+      )
     end
 
     def reset_password_params
-      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:old_password, :password, :password_confirmation])
+      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(
+        params,
+        only: [
+          :old_password, :password, :password_confirmation
+        ]
+      )
     end
 end

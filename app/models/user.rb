@@ -15,9 +15,17 @@ class User < ApplicationRecord
 
     def validate_blocks_or_stores_present?
       # errors.add(:details, "该用户存在商圈或者商铺信息") if self.blocks.exists? || self.stores.exists?
-      if self.has_role?(:BD_supervisor) && (!Block.where(developer_id: self.id).empty? || !Store.where(developer_id: self.id).empty? || !Enterprise.where(developer_id: self.id).empty?)
+      if self.has_role?(:BD_supervisor) && \
+        ( Block.exists?(developer_id: self.id) || \
+          Store.exists?(developer_id: self.id) || \
+          Enterprise.exists?(developer_id: self.id)
+        )
         errors.add(:details, "该BD专员存在商圈或者商铺信息")
-      elsif self.has_role?(:operation_specialist ) && (!Block.where(operator_id: self.id).empty? || !Store.where(operator_id: self.id).empty? || !Enterprise.where(operator_id: self.id).empty?)
+      elsif self.has_role?(:operation_specialist ) && \
+        ( Block.exists?(operator_id: self.id) || \
+          Store.exists?(operator_id: self.id) || \
+          Enterprise.exists?(operator_id: self.id)
+        )
         errors.add(:details, "该BD专员存在商圈或者商铺信息")
       end
     end

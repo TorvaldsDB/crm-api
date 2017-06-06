@@ -33,7 +33,9 @@ class ApplicationController < ActionController::API
 
   def transform_param_keys
     # params[:data][:attributes].transform_keys! { |key| key.to_s.tr("-", "_") } if request.headers.include?('Content-Type') && request.headers['Content-Type'] == 'application/vnd.api+json'
-    params[:data][:attributes].transform_keys! { |key| key.to_s.tr("-", "_") } if params[:data] && params[:data][:attributes]
+    if params[:data] && params[:data][:attributes]
+      params[:data][:attributes].transform_keys! { |key| key.to_s.tr("-", "_") }
+    end
   end
 
 

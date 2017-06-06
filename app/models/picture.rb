@@ -8,5 +8,7 @@ class Picture < ApplicationRecord
                     :url => "/system/:class/:id/:attachment/:style.:extension",
                     :default_url => "missing"
 
-  validates_attachment :picture, content_type: { content_type: /\Aimage\/.*\z/ }, size: { in: 0..3.megabytes }
+  validates_attachment :picture, content_type:{
+    content_type: /\Aimage\/.*\z/ }, size: { in: 0..3.megabytes
+  }
 end

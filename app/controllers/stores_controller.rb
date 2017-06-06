@@ -29,7 +29,7 @@ class StoresController < ApplicationController
     if params[:block_id].present?
       ransack_params[:block_id_eq] = params[:block_id].to_i
     end
-    
+
     ransack_params[:store_district] = params[:store_district]
     ransack_params[:store_category] = params[:store_category]
 
@@ -88,8 +88,13 @@ class StoresController < ApplicationController
     end
 
     def store_params
-      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:name, :developer_id, :operator_id,
-                  :block_id, :district, :category, :address, :contact, :contact_position, :contact_telephone, :remarks,
-                  :enterprise_id, :contact_otherinfo, :code, :product])
+      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(
+        params,
+        only: [
+          :name, :developer_id, :operator_id, :block_id, :district, :category,
+          :address, :contact, :contact_position, :contact_telephone, :remarks,
+          :enterprise_id, :contact_otherinfo, :code, :product
+        ]
+      )
     end
 end

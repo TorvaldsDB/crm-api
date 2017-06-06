@@ -7,7 +7,9 @@ class CooperationsController < ApplicationController
   # get /stores/:id/cooperations
   def index
     cooperations = @store.cooperations.page(params[:page][:number]).per(params[:page][:size])
-    render status: :ok, json: cooperations, EachSerializer: CooperationSerializer, meta: pagination_dict(cooperations)
+    render status: :ok, json: cooperations,
+           EachSerializer: CooperationSerializer,
+           meta: pagination_dict(cooperations)
   end
 
   # 创建商铺与服务之间的关系
@@ -18,13 +20,15 @@ class CooperationsController < ApplicationController
     flag = @store.cooperations.pluck(:service_id).include?(cooperation.service_id)
     if flag
       cooperation.errors.add(:base, "该商铺已经在使用同样的服务，请不要重复添加！！！")
-      return render status: :unprocessable_entity, json: cooperation, serializer: ActiveModel::Serializer::ErrorSerializer
+      return render status: :unprocessable_entity, json: cooperation,
+                    serializer: ActiveModel::Serializer::ErrorSerializer
     end
 
     if cooperation.save
       render status: :created, json: cooperation
     else
-      render status: :unprocessable_entity, json: cooperation, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: cooperation,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -38,7 +42,8 @@ class CooperationsController < ApplicationController
     if @cooperation.update(cooperation_params)
       render status: :ok, json: @cooperation
     else
-      render status: :unprocessable_entity, json: @cooperation, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @cooperation,
+             serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -52,8 +57,9 @@ class CooperationsController < ApplicationController
   private
 
     def cooperation_params
-      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:service_id, :start_date,
-                                                                                        :status, :remarks])
+      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(
+        params, only: [:service_id, :start_date,:status, :remarks]
+      )
     end
 
     def set_store
@@ -62,7 +68,8 @@ class CooperationsController < ApplicationController
 
     def set_cooperation
       # @cooperation = Cooperation.where("store_id = ? and service_id = ?", params[:store_id], params[:service_id]).take
-      @cooperation = Cooperation.find_by(id: params[:id])
-      return render status: :not_found unless @cooperation
+      @cooperation = Cooperation.find(params[:id])
+    rescue => ex
+      render json: { error: e.message }, status: :not_found
     end
 end

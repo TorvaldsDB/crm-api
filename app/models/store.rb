@@ -14,7 +14,6 @@ class Store < ApplicationRecord
   validates :code, presence: true, uniqueness: true
 
   scope :store_district, -> (*params) {
-    # binding.pry
     params_hash = params.to_h.deep_symbolize_keys
     district_level, district_id = params_hash[:level], params_hash[:id]
     if district_level.present? && district_id.present?
@@ -23,7 +22,6 @@ class Store < ApplicationRecord
   }
 
   scope :store_category, -> (*params) {
-    # binding.pry
     params_hash = params.to_h.deep_symbolize_keys
     category_level, category_id = params_hash[:level], params_hash[:id]
     if category_level.present? && category_id.present?
@@ -34,7 +32,6 @@ class Store < ApplicationRecord
   class << self
     # ransack scope
     def ransackable_scopes(auth_obj = nil)
-      # binding.pry
       %i(store_district store_category)
     end
   end

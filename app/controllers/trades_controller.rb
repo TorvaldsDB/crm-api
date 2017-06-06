@@ -25,8 +25,10 @@ class TradesController < ApplicationController
       trades = Trade.where(store_id: params[:store_id]).where(date: (start_date..end_date))
                .page(params[:page][:number]).per(params[:page][:size])
     else
-      trades = Trade.where(date: (start_date..end_date)).page(params[:page][:number]).per(params[:page][:size])
+      trades = Trade.where(date: (start_date..end_date))
+               .page(params[:page][:number]).per(params[:page][:size])
     end
-    render status: :ok, json: trades, each_serializer: TradeSerializer, meta: pagination_dict(trades)
+    render status: :ok, json: trades, each_serializer: TradeSerializer,
+           meta: pagination_dict(trades)
   end
 end

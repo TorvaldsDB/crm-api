@@ -10,7 +10,8 @@ class PicturesController < ApplicationController
     if picture.save
       render status: :created, json: picture, Serializer: PictureSerializer
     else
-      render status: :unprocessable_entity, json: picture, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: picture,
+        serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -21,7 +22,8 @@ class PicturesController < ApplicationController
     if picture.save
       render status: :created, json: picture, Serializer: PictureSerializer
     else
-      render status: :unprocessable_entity, json: picture, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: picture,
+        serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -31,7 +33,8 @@ class PicturesController < ApplicationController
     if @picture.destroy
       render status: :no_content
     else
-      render status: :unprocessable_entity, json: @picture, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @picture,
+        serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -50,7 +53,10 @@ class PicturesController < ApplicationController
     end
 
     def picture_params
-      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:picture])
+      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(
+        params,
+        only: [:picture]
+      )
       parameters[:picture] = adapt_to_base64(parameters[:picture]) if parameters[:picture]
       parameters
     end

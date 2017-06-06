@@ -1,7 +1,7 @@
 class Block < ApplicationRecord
-  paginates_per 15 # 分页时每页显示20条数据
+  paginates_per 15 # 分页时每页显示15条数据
 
-  default_scope {order(created_at: :desc)}
+  default_scope { order(created_at: :desc) }
 
   # before_destroy :validate_stores_present?
 

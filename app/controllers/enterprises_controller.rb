@@ -12,8 +12,10 @@ class EnterprisesController < ApplicationController
     ransack_params[:developer_id_eq] = params[:developer_id].to_i unless params[:developer_id].empty?
     ransack_params[:operator_id_eq] = params[:operator_id].to_i unless params[:operator_id].empty?
     # 如果ransack_params为空，ransack方法会返回所有的企业
-    ents = Enterprise.ransack(ransack_params).result.page(params[:page][:number]).per(params[:page][:size])
-    render status: :ok, json: ents, each_serializer: EnterpriseSerializer, meta: pagination_dict(ents)
+    ents = Enterprise.ransack(ransack_params).result
+                     .page(params[:page][:number]).per(params[:page][:size])
+    render status: :ok, json: ents, each_serializer: EnterpriseSerializer,
+           meta: pagination_dict(ents)
   end
 
   # 模糊查询企业
@@ -36,7 +38,8 @@ class EnterprisesController < ApplicationController
     if ent.save
       render status: :created, json: ent, Serializer: EnterpriseSerializer
     else
-      render status: :unprocessable_entity, json: ent, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: ent,
+        serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -52,7 +55,8 @@ class EnterprisesController < ApplicationController
     if @ent.update(ent_params)
       render status: :ok, json: @ent, Serializer: EnterpriseSerializer
     else
-      render status: :unprocessable_entity, json: @ent, serializer: ActiveModel::Serializer::ErrorSerializer
+      render status: :unprocessable_entity, json: @ent,
+        serializer: ActiveModel::Serializer::ErrorSerializer
     end
   end
 
@@ -70,7 +74,13 @@ class EnterprisesController < ApplicationController
     end
 
     def ent_params
-      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(params, only: [:name, :developer_id, :operator_id,
-                   :district, :address, :contact, :contact_position, :contact_telephone, :contact_otherinfo, :remarks, :code])
+      parameters = ActiveModelSerializers::Deserialization.jsonapi_parse(
+        params,
+        only: [
+          :name, :developer_id, :operator_id,
+          :district, :address, :contact, :contact_position,
+          :contact_telephone, :contact_otherinfo, :remarks, :code
+        ]
+      )
     end
 end
